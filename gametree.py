@@ -6,6 +6,7 @@ import ChessGame
 
 START_MOVE = '*'
 
+
 class GameTree:
     """A decision tree for the five in a row game.
     - attributes:
