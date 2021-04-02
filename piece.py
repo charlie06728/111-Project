@@ -1,7 +1,9 @@
 """..."""
 from __future__ import annotations
 from typing import Optional
+from copy import deepcopy
 import math
+import random
 
 
 # DIRECTIONS = {'above', 'below', 'right', 'left', 'top right', 'top left',
@@ -23,15 +25,20 @@ class Piece:
          'bottom right', 'bottom left'})
       """
     kind: str
-    neighbours: dict[str, list[Piece]]
-    obstacles: dict[str, list[Piece]]
+    neighbours: dict[str, list[tuple[int, Piece]]]
+    # obstacles: dict[str, list[Piece]]
     coordinate: tuple[int, int]
 
     def __init__(self, coordinate: tuple[int, int], kind: str) -> None:
         self.coordinate = coordinate
         self.kind = kind
-        self.neighbours = {}
-        self.obstacles = {}
+        for direction in DIRECTIONS:
+            self.neighbours[direction] = []
+
+    def add_neighbour(self, other: Piece, direction: str, distance: int) -> None:
+        """Add a new neighbour to the current piece.
+        """
+        self.neighbours[direction] = (distance, other)
 
     def is_adjacent(self, other: Piece) -> bool:
         """Return whether a piece is adjacent to current one.
@@ -67,112 +74,146 @@ class Pieces:
             return -1
 
         self.vertices[piece.coordinate] = piece
-        all_neighbours = self.get_neighbours(piece.coordinate)
 
-        for direction in all_neighbours:
-            for item in all_neighbours[direction]:
-                if item.kind == piece.kind:
-                    if direction in piece.neighbours:
-                        piece.neighbours[direction].append(item)
-                    else:
-                        piece.neighbours[direction] = [item]
-                else:
-                    if direction in piece.obstacles:
-                        piece.obstacles[direction].append(item)
-                    else:
-                        piece.obstacles = [item]
+        # Add current piece's neighbours
+        self.get_neighbours(piece.coordinate)
 
-    def get_neighbours(self, coordinate: tuple[int, int]) -> dict[str, list[Piece]]:
-        """Return the neighbours of given pieces.
+        for direction in DIRECTIONS:
+            assert len(piece.neighbours[direction]) <= 2
+
+    def get_neighbours(self, coordinate: tuple[int, int]) -> None:
+        """Return the neighbours of given pieces according to criteria as below:
+          - count pieces within 5 grids away from current coordinate in each direction.
+          -
         """
-        # TODO:
+        # TODO: Hasn't specify the piece with different kind.
+        cur_piece = self.vertices[coordinate]
+        cur_cor = cur_piece.coordinate
+        for direction in DIRECTIONS:
+            if direction == 'vertical':
+                for i in [1, -1]:
+                    for j in range(1, 6):
+                        y = cur_cor[1] + i * j
+                        x = cur_cor[0]
+                        if (x, y) not in self.vertices:
+                            continue
+                        elif self.vertices[(x, y)].kind == cur_piece.kind:
+                            cur_piece.add_neighbour(self.vertices[(x, y)], direction,
+                                                    abs(y - cur_cor[1]))
+                            break
+                        elif self.vertices[(x, y)].kind != cur_piece.kind:
+                            cur_piece.add_neighbour(self.vertices[(x, y)], direction,
+                                                    - abs(y - cur_cor[1]))
+                            break
 
-    def evaluate(self, visited: set[Piece]) -> int:
+            elif direction == 'horizontal':
+                for i in [1, -1]:
+                    for j in range(1, 6):
+                        y = cur_cor[0]
+                        x = cur_cor[0] + i * j
+                        if (x, y) not in self.vertices:
+                            continue
+                        elif self.vertices[(x, y)].kind == cur_piece.kind:
+                            cur_piece.add_neighbour(self.vertices[(x, y)], direction,
+                                                    abs(x - cur_cor[0]))
+                            break
+                        elif self.vertices[(x, y)].kind != cur_piece.kind:
+                            cur_piece.add_neighbour(self.vertices[(x, y)], direction,
+                                                    - abs(x - cur_cor[0]))
+                            break
+
+            elif direction == 'right diagonal':
+                for i in [1, -1]:
+                    for j in range(1, 6):
+                        y = cur_cor[0] + i * j
+                        x = cur_cor[0] + i * j
+                        if (x, y) not in self.vertices:
+                            continue
+                        elif self.vertices[(x, y)].kind == cur_piece.kind:
+                            cur_piece.add_neighbour(self.vertices[(x, y)], direction,
+                                                    abs(x - cur_cor[0]))
+                            break
+                        elif self.vertices[(x, y)].kind != cur_piece.kind:
+                            cur_piece.add_neighbour(self.vertices[(x, y)], direction,
+                                                    - abs(x - cur_cor[0]))
+                            break
+            elif direction == 'left diagonal':
+                for i in [1, -1]:
+                    for j in range(1, 6):
+                        y = cur_cor[0] + i * j
+                        x = cur_cor[0] - i * j
+                        if (x, y) not in self.vertices:
+                            continue
+                        elif self.vertices[(x, y)].kind == cur_piece.kind:
+                            cur_piece.add_neighbour(self.vertices[(x, y)], direction,
+                                                    abs(x - cur_cor[0]))
+                            break
+                        elif self.vertices[(x, y)].kind != cur_piece.kind:
+                            cur_piece.add_neighbour(self.vertices[(x, y)], direction,
+                                                    - abs(x - cur_cor[0]))
+                            break
+
+    def evaluate(self) -> int:
         """Return the score of the current situation.
+        An empty set need to be passed in.
         """
         # ACCUMULATOR:
         score_so_far = 0
 
         for coordinate in self.vertices:
-            visited += self.vertices[coordinate]
+            for direc in DIRECTIONS:
+                score_so_far += self._single_evaluation(coordinate, 4, direc)
 
-    def _single_evaluation(self, coordinate: tuple[int, int], visited: set[Piece]) \
-            -> tuple[int, set]:
+        return score_so_far
+
+    def _single_evaluation(self, coordinate: tuple[int, int], count: int, direction: str) -> int:
         """...
-        current_piece = self.vertices[coordinate]
-        visited.add(self.vertices[coordinate])
-        neighbours = self.get_neighbours(current_piece.coordinate)
-        current_length = 5
-        score = 0
-        for direction in DIRECTIONS:
-            if direction in neighbours:
-                pieces_in_direction = neighbours[direction]
-                for piece in pieces_in_direction:
-                    # If the neighbouring piece doesn't have the same color, no score change will
-                    # be made
-                    if piece.kind == current_piece.kind and piece.kind == 'black':
-                        score += 50
-                    elif piece.kind == current_piece.kind and piece.kind == 'white':
-                        score -= 50
-                    visited.add(piece)
-                    score += self._single_evaluation(piece.coordinate, visited)
 
-        return score
         """
-        current_piece = self.vertices[coordinate]
-        visited.add(current_piece)
-        neighbours = self.get_neighbours(coordinate)
         score_so_far = 0
-        for direction in DIRECTIONS:
-            pieces_in_dir = neighbours[direction]
-            favor_pieces = {current_piece}
-            for piece in pieces_in_dir:
-                counter_pieces = set()
-                if piece.kind == current_piece:
-                    favor_pieces.add(piece)
-                elif piece.kind != current_piece:
-                    counter_pieces.add(piece)
 
-                if len(counter_pieces) == 2:
-                    # This line has no possibility of being five in a row.
-                    score_so_far = 0
-                else:
-                    score_so_far += self._get_score(favor_pieces, counter_pieces)
+        current_piece = self.vertices[coordinate]
+        neighbours = current_piece.neighbours
 
-        return (score_so_far, visited)
+        # for direction in DIRECTIONS:
+        pieces_in_dir = neighbours[direction]
+        counter = 0
+        length = []
+        for piece in pieces_in_dir:
+            if piece[1].kind != current_piece.kind:
+                counter += 1
+            elif count > 0:
+                length.append(piece[0])
+                count -= piece[0] + 1
+                next_piece = deepcopy(piece[1])  # TODO:
+                next_piece.neighbours[direction].remove((piece[0], current_piece))
+                score_so_far += self._single_evaluation(next_piece.coordinate, count, direction)
 
-    def _get_score(self, pieces: set[Piece], obstacles: set[Piece]) -> int:
-        """Return the score of this line.
-        """
-        length = len(pieces)
-        obs_length = len(obstacles)
-        assert obs_length < 2
-        score = 0
-        if length == 1:
-            score = 50 - 25 * obs_length
-        elif length == 2 and obs_length == 0:
-            score = 200 - 100 * obs_length
-        elif length == 3 and obs_length == 0:
-            score = 500 - 200 * obs_length
-        elif length == 4:
-            if self._in_a_line(pieces):
-                score = 8000
-            else:
-                score = 800 - 300 * obs_length
-        elif length == 5:
-            # win
-            score = math.inf
+        score_so_far += self._get_score(counter, length)
+        return score_so_far
 
-        return score
+    def _get_score(self, counter: int, length: list[int]) -> int:
+        """..."""
+        score_so_far = 0
 
-    def _in_a_line(self, pieces: set[Piece]) -> bool:
-        """Return whether these pieces is in a line without gap.
-        """
-        co = pieces
-        for piece in pieces:
-            co.remove(piece)
-            for neighbour in co.copy():
-                if piece.is_adjacent(neighbour):
-                    co.remove(neighbour)
+        if counter >= 2:
+            pass
+        else:
+            for grid_len in length:
+                if grid_len == 1:
+                    score_so_far += 400
+                elif grid_len == 2:
+                    score_so_far += 100
+                elif grid_len == 3:
+                    score_so_far += 25
+            if counter == 1:
+                score_so_far = score_so_far // 2
 
-        return len(co) == 0
+        return score_so_far
+
+
+
+
+
+
+
