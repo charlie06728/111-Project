@@ -1,7 +1,7 @@
 """The gametree class for the five in a row project"""
 
 from __future__ import annotations
-from typing import List, Optional
+from typing import List, Optional, Union
 import ChessGame
 
 START_MOVE = '*'
@@ -19,7 +19,7 @@ class GameTree:
 
     """
     score: int
-    move: str
+    move: Union[tuple[int, int], str]
     black_move: bool
     subtrees: List[GameTree]
     better_score: int
@@ -36,7 +36,7 @@ class GameTree:
         self.game_status = ChessGame.ChessGame()
 
     def generate_tree_based_on_move(self, game_state: ChessGame, prev_move: str,
-                                    depth: int = 0) -> GameTree:
+                                    depth: int) -> GameTree:
         """ A recursive function that returns a tree.
         The root of the tree will be prev_move. The tree will first get all possible next moves,
         and for each "next move", it will recursively look for next moves of the move, and stop
@@ -45,7 +45,7 @@ class GameTree:
         self.current_score, we move on to the next immediately. When the move is for our ai, it
         will seek largest score, and when the move is for opponent, it will seek the lowest score.
         """
-        if depth >= 5:
+        if depth == 0:
             return self
         else:
             ...
@@ -59,7 +59,7 @@ class GameTree:
         """Update the score for the current tree based on the given chess game. """
         self.score = ChessGame.ChessGame.get_score(self.game_status)
 
-    def get_max_score(self) -> tuple[str, int]:
+    def get_max_score(self) -> tuple[tuple[int, int], int]:
         """Returns the a tuple of move and score of the subtree with highest score
         """
         if self.subtrees == []:
@@ -68,7 +68,7 @@ class GameTree:
             acc = []
             for subtree in self.subtrees:
                 acc.append(subtree.get_max_score())
-            return max(acc)
+            return max(acc, key=lambda x: x[1])
 
     def get_subtrees(self) -> Optional[List[GameTree]]:
         """Return all subtrees of the tree. If there is no subtrees, return None. """
@@ -77,7 +77,7 @@ class GameTree:
         else:
             return self.subtrees
 
-    def find_subtree_by_move(self, move: str) -> Optional[GameTree]:
+    def find_subtree_by_move(self, move: Union[tuple[int, int], str]) -> Optional[GameTree]:
         """Return the found subtree by the given move. Return None if no subtree is found. """
         for subtree in self.subtrees:
             if move == subtree.move:

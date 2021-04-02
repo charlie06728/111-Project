@@ -3,6 +3,8 @@ from piece import Piece, Pieces
 
 BOARD_WIDTH = 15
 BOARD_LENGTH = 15
+
+
 class ChessGame:
     """A class representing a state of a game.
 
@@ -68,3 +70,8 @@ class ChessGame:
         """Return the socre of current situation.
         """
         return self.pieces.evaluate()
+
+    def get_is_black(self) -> bool:
+        """Return whether the current move is by black.
+        """
+        return self._is_black_active

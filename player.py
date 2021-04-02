@@ -1,32 +1,24 @@
 """The player class for the five in a row project"""
 
-from typing import Optional
-import Gametree
+from typing import Union
 import ChessGame
+import gametree
 
 
 class Player:
     """ A class for how two players move their pieces during the game
-        - attributes:
-        - gametree: Gametree
     """
 
-
-def __init__(self, name, symbol):
-    self.name = name
-    self.symbol = symbol
-
-
-def start_move(self, game):
-    """ Update the first piece places on the chess broad, which will
-    be in the middle of the chess broad.
-    """
-
-
-def make_move(self, game_state: ChessGame, prev_move: str) -> str:
-    """ Return a string representing the next move to be made by the ai,
-    based on the previous move of opponent. The function will generate
-    a gametree of depth 5, look for the left most subtree that has
-    the highest score, and return the move (position on the board)
-    corresponding to that subtree.
-    """
+    def make_move(self, game_state: ChessGame.ChessGame,
+                  prev_move: Union[tuple[int, int], str]) -> None:
+        """ Make move based on the previous move of opponent. The function will generate
+        a gametree of depth 5, look for the subtree that has
+        the highest score, and makes the move in game_state.
+        """
+        if prev_move == '*':
+            game_state.make_move((7, 7))
+        else:
+            tree = gametree.GameTree(move=prev_move, black_move=game_state.get_is_black())
+            tree.generate_tree_based_on_move(game_state, prev_move, 5)
+            best_move = tree.get_max_score()
+            game_state.make_move(best_move[0])
