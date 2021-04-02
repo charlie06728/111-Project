@@ -47,6 +47,20 @@ class Piece:
         else:
             return False
 
+    def prune_neighbours(self) -> None:
+        """Adjust the neighbours when it's different color.
+        """
+        for direction in DIRECTIONS:
+            counter = []
+            for piece_tup in self.neighbours[direction]:
+                if piece_tup[1].kind != self.kind:
+                    counter.append(piece_tup)
+
+            if len(counter) == 2 and counter[0][0] + counter[1][0] > 3:
+                # Delete one neighbour.
+                delete_one = max(counter)
+                self.neighbours[direction].remove(delete_one)
+
 
 class Pieces:
     """A graph that represents the whole game pieces.
@@ -74,6 +88,7 @@ class Pieces:
 
         # Add current piece's neighbours
         self.get_neighbours(piece.coordinate)
+        piece.prune_neighbours()
 
         for direction in DIRECTIONS:
             assert len(piece.neighbours[direction]) <= 2
@@ -83,7 +98,6 @@ class Pieces:
           - count pieces within 5 grids away from current coordinate in each direction.
           -
         """
-        # TODO: Hasn't specify the piece with different kind.
         cur_piece = self.vertices[coordinate]
         cur_cor = cur_piece.coordinate
 
