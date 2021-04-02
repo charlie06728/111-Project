@@ -59,6 +59,17 @@ class GameTree:
         """Update the score for the current tree based on the given chess game. """
         self.score = ChessGame.ChessGame.get_score(self.game_status)
 
+    def get_max_score(self) -> tuple[str, int]:
+        """Returns the a tuple of move and score of the subtree with highest score
+        """
+        if self.subtrees == []:
+            return (self.move, self.score)
+        else:
+            acc = []
+            for subtree in self.subtrees:
+                acc.append(subtree.get_max_score())
+            return max(acc)
+
     def get_subtrees(self) -> Optional[List[GameTree]]:
         """Return all subtrees of the tree. If there is no subtrees, return None. """
         if self.subtrees == []:
