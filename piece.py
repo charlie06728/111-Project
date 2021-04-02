@@ -6,8 +6,6 @@ import math
 import random
 
 
-# DIRECTIONS = {'above', 'below', 'right', 'left', 'top right', 'top left',
-#               'bottom right', 'bottom left'}
 DIRECTIONS = {'vertical', 'horizontal', 'right diagonal', 'left diagonal'}
 
 
@@ -26,7 +24,6 @@ class Piece:
       """
     kind: str
     neighbours: dict[str, list[tuple[int, Piece]]]
-    # obstacles: dict[str, list[Piece]]
     coordinate: tuple[int, int]
 
     def __init__(self, coordinate: tuple[int, int], kind: str) -> None:
@@ -38,7 +35,7 @@ class Piece:
     def add_neighbour(self, other: Piece, direction: str, distance: int) -> None:
         """Add a new neighbour to the current piece.
         """
-        self.neighbours[direction] = (distance, other)
+        self.neighbours[direction].append((distance, other))
 
     def is_adjacent(self, other: Piece) -> bool:
         """Return whether a piece is adjacent to current one.
@@ -89,7 +86,10 @@ class Pieces:
         # TODO: Hasn't specify the piece with different kind.
         cur_piece = self.vertices[coordinate]
         cur_cor = cur_piece.coordinate
+
         for direction in DIRECTIONS:
+            # In vertical case, only the y value changes, the distance between pieces is the
+            # difference between y values.
             if direction == 'vertical':
                 for i in [1, -1]:
                     for j in range(1, 6):
@@ -106,6 +106,8 @@ class Pieces:
                                                     - abs(y - cur_cor[1]))
                             break
 
+            # In horizontal case, only x value changes, the distance between pieces is the
+            # difference between x values.
             elif direction == 'horizontal':
                 for i in [1, -1]:
                     for j in range(1, 6):
@@ -122,6 +124,8 @@ class Pieces:
                                                     - abs(x - cur_cor[0]))
                             break
 
+            # In right diagonal case, x y changes simultaneously, so the distance between
+            # piece could be either one.
             elif direction == 'right diagonal':
                 for i in [1, -1]:
                     for j in range(1, 6):
@@ -137,6 +141,9 @@ class Pieces:
                             cur_piece.add_neighbour(self.vertices[(x, y)], direction,
                                                     - abs(x - cur_cor[0]))
                             break
+
+            # In right diagonal case, x y changes simultaneously, so the distance between
+            # piece could be either one.
             elif direction == 'left diagonal':
                 for i in [1, -1]:
                     for j in range(1, 6):
@@ -166,10 +173,12 @@ class Pieces:
 
         return score_so_far
 
-    def _single_evaluation(self, coordinate: tuple[int, int], count: int, direction: str) -> int:
+    def _single_evaluation(self, coordinate: tuple[int, int], count: int, direction: str) \
+            -> int:
         """...
 
         """
+        # ACCUMULATOR:
         score_so_far = 0
 
         current_piece = self.vertices[coordinate]
@@ -177,19 +186,35 @@ class Pieces:
 
         # for direction in DIRECTIONS:
         pieces_in_dir = neighbours[direction]
+
+        # The number of pieces in different color.
         counter = 0
+
+        # Using a list to store the distance between pieces in terms of [1, 2,...]
         length = []
+
         for piece in pieces_in_dir:
+
+            # If enemy piece is countered, add 1 to counter.
             if piece[1].kind != current_piece.kind:
                 counter += 1
-            elif count > 0:
+
+            elif count > 0 and piece[0] < count:  # Make sure that the length if enough.
+
+                # Update the length only if it's the same kind piece
                 length.append(piece[0])
                 count -= piece[0] + 1
-                next_piece = deepcopy(piece[1])  # TODO:
+
+                score_so_far += self._get_score(counter, length)
+
+                # Make a copy of the piece we want to evaluate next, and remove the edge
+                # between current piece and this copied piece so that it won't loop on the
+                # same edge.
+                next_piece = deepcopy(piece[1])
                 next_piece.neighbours[direction].remove((piece[0], current_piece))
+
                 score_so_far += self._single_evaluation(next_piece.coordinate, count, direction)
 
-        score_so_far += self._get_score(counter, length)
         return score_so_far
 
     def _get_score(self, counter: int, length: list[int]) -> int:
@@ -197,6 +222,8 @@ class Pieces:
         score_so_far = 0
 
         if counter >= 2:
+            # If there are two enemy pieces, there's no change that row in a row could be
+            # achieved in this direction
             pass
         else:
             for grid_len in length:
