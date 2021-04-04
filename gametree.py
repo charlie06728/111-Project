@@ -24,17 +24,17 @@ class GameTree:
     move: Union[tuple[int, int], str]
     black_move: bool
     subtrees: Optional[list[GameTree]]
-    better_score: int
+    better_score: Optional[int]
     game_status: ChessGame
 
-    def __init__(self, score: Optional[int] = None, move: str = '*', black_move: bool = True,
-                 better_score: int = 0):
+    def __init__(self, score: Optional[int] = None, move: str = '*', black_move: bool = True) \
+            -> None:
         """Initialize the gametree to be an empty tree. """
         self.score = score
         self.move = move
         self.black_move = black_move  # In start of the game, black player moves first
         self.subtrees = []
-        self.better_score = better_score
+        self.better_score = None
         self.game_status = ChessGame()
 
     def generate_tree_based_on_move(self, game_state: ChessGame, prev_move: tuple[int, int],
@@ -59,16 +59,19 @@ class GameTree:
                 copy_game = deepcopy(game_state)
                 copy_game.make_move(move)
                 next_tree = GameTree(black_move=not self.black_move)
-                next_tree.better_score = self.better_score
+                if self.score is not None:
+                    next_tree.better_score = self.score
 
                 self.add_subtree(next_tree.generate_tree_based_on_move(copy_game, move, depth - 1))
 
                 self.score = self.minimax()
 
-                # Alpha-Beta pruning
-                if self.black_move and self.score > next_tree.score:
+                # Alpha-Beta pruning, The AI player will always be the black one.
+                if self.score is None or self.better_score is None:
+                    continue
+                if self.black_move and self.better_score < self.score:
                     return None
-                elif not self.black_move and self.score < next_tree.score:
+                elif not self.black_move and self.better_score > self.score:
                     return None
 
     def minimax(self) -> int:
