@@ -1,6 +1,6 @@
 """A ChessGame class"""
 from piece import Piece, Pieces
-# from typing import Optional
+from typing import Optional
 
 BOARD_WIDTH = 15
 BOARD_LENGTH = 15
@@ -21,6 +21,7 @@ class ChessGame:
     _valid_moves: list[str]
     _is_black_active: bool
     pieces: Pieces
+    prev_moves: Optional[tuple[int, int]]
 
     def __init__(self, is_black_active: bool = True) -> None:
         """Initialize the Game"""
@@ -32,6 +33,7 @@ class ChessGame:
 
         self._is_black_active = is_black_active
         self.pieces = Pieces()
+        self.prev_moves = None
 
     def make_move(self, coordinate: tuple[int, int]) -> None:
         """Make move on the chess game.
@@ -44,6 +46,8 @@ class ChessGame:
         new_piece = Piece(coordinate, player)
         self.pieces.add_piece(new_piece)
         self._board[coordinate[0]][coordinate[1]] = player
+
+        self.prev_moves = coordinate
 
     def check_surrounding(self, piece: tuple[int, int], valid_moves: list) -> list[tuple[int, int]]:
         """Helper for get_valid_moves, checks the 5 by 5 surrounding of a piece and return the
