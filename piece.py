@@ -1,9 +1,9 @@
 """..."""
 from __future__ import annotations
-from typing import Optional
+from typing import Optional, Union
 from copy import deepcopy
 import math
-import random
+# import random
 
 
 DIRECTIONS = {'vertical', 'horizontal', 'right diagonal', 'left diagonal'}
@@ -188,7 +188,7 @@ class Pieces:
         return score_so_far
 
     def _single_evaluation(self, coordinate: tuple[int, int], count: int, direction: str) \
-            -> int:
+            -> Union[float, int]:
         """...
 
         """
@@ -198,10 +198,9 @@ class Pieces:
         current_piece = self.vertices[coordinate]
         neighbours = current_piece.neighbours
 
-        # for direction in DIRECTIONS:
         pieces_in_dir = neighbours[direction]
 
-        # The number of pieces in different color.
+        # The number of enemy pieces.
         counter = 0
 
         # Using a list to store the distance between pieces in terms of [1, 2,...]
@@ -217,7 +216,16 @@ class Pieces:
 
                 # Update the length only if it's the same kind piece
                 length.append(piece[0])
-                count -= piece[0] + 1
+                count -= piece[0]
+
+                # Five in a row.
+                if all(item == 1 for item in length) and count == 0:
+                    if current_piece.kind == 'black':
+                        score_so_far += math.inf
+                        return score_so_far
+                    else:
+                        score_so_far += -1 * math.inf
+                        return score_so_far
 
                 score_so_far += self._get_score(counter, length)
 
