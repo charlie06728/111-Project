@@ -1,5 +1,6 @@
 """A ChessGame class"""
 from piece import Piece, Pieces
+# from typing import Optional
 
 BOARD_WIDTH = 15
 BOARD_LENGTH = 15
@@ -21,9 +22,14 @@ class ChessGame:
     _is_black_active: bool
     pieces: Pieces
 
-    def __init__(self, board: list[list], is_black_active: bool = True) -> None:
+    def __init__(self, is_black_active: bool = True) -> None:
         """Initialize the Game"""
-        self._board = board
+        self._board = []
+        for i in range(15):
+            self._board.append([])
+            for _ in range(15):
+                self._board[i].append(None)
+
         self._is_black_active = is_black_active
         self.pieces = Pieces()
 
@@ -39,13 +45,13 @@ class ChessGame:
         self.pieces.add_piece(new_piece)
         self._board[coordinate[0]][coordinate[1]] = player
 
-    def check_surrounding(self, piece: tuple[int, int], valid_moves: list) -> list[tuple]:
+    def check_surrounding(self, piece: tuple[int, int], valid_moves: list) -> list[tuple[int, int]]:
         """Helper for get_valid_moves, checks the 5 by 5 surrounding of a piece and return the
         unfilled positions. """
         moves_for_piece = []
-        for i in range(piece[0] - 2, piece[0] + 3):
+        for i in range(piece[0] - 3, piece[0] + 4):
             for j in range(piece[1] - 2, piece[1] + 3):
-                if i in range(0, BOARD_WIDTH) and j in range(0, BOARD_LENGTH):
+                if i in range(0, BOARD_WIDTH + 1) and j in range(0, BOARD_LENGTH + 1):
                     if self._board[i][j] is None and (i, j) not in valid_moves:
                         moves_for_piece.append((i, j))
 
@@ -67,7 +73,7 @@ class ChessGame:
         return valid_moves
 
     def get_score(self) -> int:
-        """Return the socre of current situation.
+        """Return the score of current situation.
         """
         return self.pieces.evaluate()
 
