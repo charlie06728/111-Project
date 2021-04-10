@@ -56,10 +56,16 @@ class ChessGame:
         unfilled positions. """
         moves_for_piece = []
         for i in range(piece[0] - 2, piece[0] + 3):
-            for j in [piece[1] + i, piece[1] + -1 * i]:
+            for j in [piece[1] + i - piece[0], piece[1] - i + piece[0], piece[1]]:
                 if i in range(0, BOARD_WIDTH) and j in range(0, BOARD_LENGTH):
                     if self._board[i][j] is None and (i, j) not in valid_moves:
                         moves_for_piece.append((i, j))
+            if i == piece[0]:
+                for j in range(piece[1] - 2, piece[1] + 3):
+                    if i in range(0, BOARD_WIDTH) and j in range(0, BOARD_LENGTH):
+                        if self._board[i][j] is None and (i, j) not in valid_moves:
+                            moves_for_piece.append((i, j))
+
         # for i in range(piece[0] - 2, piece[0] + 3):
         #     for j in range(piece[1] - 2, piece[1] + 3):
         #         if i in range(0, BOARD_WIDTH) and j in range(0, BOARD_LENGTH):

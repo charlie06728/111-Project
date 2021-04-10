@@ -81,7 +81,7 @@ class IntelligentPlayer:
         """
         prev_move = self.game.prev_move
         self.game_tree = GameTree()
-        self.game_tree.generate_tree_based_on_move(self.game, prev_move, 3)
+        self.game_tree.generate_tree_based_on_move(self.game, prev_move, 1)
         if self.kind == 'black':
             # assert self.game_tree.subtrees == []
             cur_tree = self.game_tree.subtrees[0]

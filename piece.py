@@ -65,6 +65,8 @@ class Piece:
                 delete_one = min(lst)
                 index = lst.index(delete_one)
                 self.neighbours[direction].remove(counter[index])
+            # elif len(counter) == 1 and counter[0][0] < -1:
+            #     self.neighbours[direction].remove(counter[0])
 
 
 class Pieces:
@@ -144,6 +146,7 @@ class Pieces:
                                         (y - cur_piece.coordinate[1]) /
                                         (y - original_nei[1].coordinate[1])) > 0:
                                     n_p.neighbours[direction].remove(original_nei)
+                                    # n_p.prune_neighbours()
                             break
 
             # In horizontal case, only x value changes, the distance between pieces is the
@@ -183,6 +186,7 @@ class Pieces:
                                         (x - cur_piece.coordinate[0]) /
                                         (x - original_nei[1].coordinate[0])) > 0:
                                     n_p.neighbours[direction].remove(original_nei)
+                                    # n_p.prune_neighbours()
                             break
 
             # In right diagonal case, x y changes simultaneously, so the distance between
@@ -220,6 +224,7 @@ class Pieces:
                                         (x - cur_piece.coordinate[0]) /
                                         (x - original_nei[1].coordinate[0])) > 0:
                                     n_p.neighbours[direction].remove(original_nei)
+                                    # n_p.prune_neighbours()
                             break
 
             # In right diagonal case, x y changes simultaneously, so the distance between
@@ -257,6 +262,7 @@ class Pieces:
                                         (x - cur_piece.coordinate[0]) /
                                         (x - original_nei[1].coordinate[0])) > 0:
                                     n_p.neighbours[direction].remove(original_nei)
+                                    # n_p.prune_neighbours()
                             break
 
     def evaluate(self) -> int:
@@ -269,9 +275,12 @@ class Pieces:
         for coordinate in self.vertices:
             for direc in DIRECTIONS:
                 # print(f"")
-                score_so_far += self._single_evaluation(coordinate, 4, direc, set(), [])
+                cor_score = self._single_evaluation(coordinate, 4, direc, set(), [])
+                score_so_far += cor_score
                 if score_so_far == math.inf or score_so_far == math.inf * -1:
                     return score_so_far
+
+                # print(f"{coordinate} - {cor_score}")
 
         return score_so_far
 
@@ -290,25 +299,31 @@ class Pieces:
         # counter = 0
 
         # Using a list to store the distance between pieces in terms of [1, 2,...]
-        length = []
+        # length = []
 
         lst_of_length = []
         for p in pieces_in_dir:
             if p[0] > 0:
                 lst_of_length.append(p[0])
         for i, piece in enumerate(pieces_in_dir.copy()):
-
-            if piece[1] in visited and piece[0] in lst_of_length:
-                lst_of_length.remove(piece[0])
+            # Using a list to store the distance between pieces in terms of [1, 2,...]
+            length = []
+            # print(f"{piece[1].coordinate}--neighbour")
+            if piece[1] in visited:
+                if piece[0] in lst_of_length:
+                    lst_of_length.remove(piece[0])
                 continue
+
+            assert piece[1] not in visited
 
             # If enemy piece is countered, add 1 to counter.
             if piece[1].kind != current_piece.kind:
+                # assert piece[0] == -1
                 counter += 1
                 if counter == 2:
                     return 0
-                else:
-                    score_so_far = score_so_far // 2
+                elif counter == 1:
+                    score_so_far = int(score_so_far * ((piece[0] * -1) / (piece[0] * -1 + 1)))
             elif count > 0:  # Make sure that the length is enough.
                 assert piece[1].kind == current_piece.kind
 
@@ -354,6 +369,7 @@ class Pieces:
                 next_piece = piece[1]
 
                 visited.add(current_piece)
+                # print(init_score)
 
                 score_so_far += self._single_evaluation(next_piece.coordinate, count, direction,
                                                         visited, lst, counter)
@@ -387,10 +403,15 @@ if __name__ == '__main__':
     ps.add_piece(Piece((7, 7), 'black'))
     ps.add_piece(Piece((5, 7), 'black'))
     ps.add_piece(Piece((6, 7), 'black'))
-    ps.add_piece(Piece((3, 7), 'black'))
-    ps.add_piece(Piece((8, 7), 'black'))
-    ps.add_piece(Piece((9, 7), 'white'))
+    # ps.add_piece(Piece((3, 7), 'black'))
+    ps.add_piece(Piece((4, 7), 'black'))
+    # ps.add_piece(Piece((9, 7), 'white'))
     # ps.add_piece(Piece((4, 7), 'white'))
     print(ps.evaluate())
     print(ps.vertices[(5, 7)].neighbours)
 
+    ps.add_piece(Piece((8, 6), 'black'))
+    ps.add_piece(Piece((9, 5), 'black'))
+    ps.add_piece(Piece((10, 4), 'black'))
+    print(ps.evaluate())
+    print(ps.vertices[(5, 7)].neighbours)
