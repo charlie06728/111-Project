@@ -43,6 +43,8 @@ class ChessGame:
         else:
             player = 'white'
 
+        self._is_black_active = not self._is_black_active
+
         new_piece = Piece(coordinate, player)
         self.pieces.add_piece(new_piece)
         self._board[coordinate[0]][coordinate[1]] = player
@@ -53,11 +55,16 @@ class ChessGame:
         """Helper for get_valid_moves, checks the 5 by 5 surrounding of a piece and return the
         unfilled positions. """
         moves_for_piece = []
-        for i in range(piece[0] - 3, piece[0] + 4):
-            for j in range(piece[1] - 2, piece[1] + 3):
-                if i in range(0, BOARD_WIDTH + 1) and j in range(0, BOARD_LENGTH + 1):
+        for i in range(piece[0] - 2, piece[0] + 3):
+            for j in [piece[1] + i, piece[1] + -1 * i]:
+                if i in range(0, BOARD_WIDTH) and j in range(0, BOARD_LENGTH):
                     if self._board[i][j] is None and (i, j) not in valid_moves:
                         moves_for_piece.append((i, j))
+        # for i in range(piece[0] - 2, piece[0] + 3):
+        #     for j in range(piece[1] - 2, piece[1] + 3):
+        #         if i in range(0, BOARD_WIDTH) and j in range(0, BOARD_LENGTH):
+        #             if self._board[i][j] is None and (i, j) not in valid_moves:
+        #                 moves_for_piece.append((i, j))
 
         return moves_for_piece
 
@@ -69,10 +76,10 @@ class ChessGame:
         piece directly at the centre of the board.
         """
         valid_moves = []
-        for row in self._board:
-            for piece in row:
-                if piece is not None:  # if there is a piece
-                    valid_moves.extend(self.check_surrounding(piece, valid_moves))
+        for i in range(len(self._board)):
+            for j in range(len(self._board[i])):
+                if self._board[i][j] is not None:  # if there is a piece
+                    valid_moves.extend(self.check_surrounding((i, j), valid_moves))
 
         return valid_moves
 
@@ -85,3 +92,24 @@ class ChessGame:
         """Return whether the current move is by black.
         """
         return self._is_black_active
+
+    def print_board(self) -> None:
+        """A function designed for testing.
+        Call this function when the current state of board need to be
+        roughly visualized.
+        """
+        lst = []
+        for i in range(15):
+            lst.append([])
+
+        for i in range(len(self._board)):
+            for j in range(len(self._board[i])):
+                if self._board[i][j] is None:
+                    lst[i].append(' ')
+                elif self._board[i][j] == 'white':
+                    lst[i].append('W')
+                else:
+                    lst[i].append('B')
+
+        for i in range(15):
+            print(lst[i])

@@ -2,7 +2,7 @@
 
 from ChessGame import ChessGame
 from piece import Piece, Pieces
-from gametree import GameTree
+from Gametree import GameTree
 from typing import Optional
 import random
 
@@ -24,9 +24,9 @@ class NormalPlayer:
     game: ChessGame
     prev_move: Optional[tuple[int, int]]
 
-    def __init__(self, kind: str, game: ChessGame, game_tree: GameTree) -> None:
+    def __init__(self, kind: str, game: ChessGame) -> None:
         self.kind = kind
-        self.game_tree = game_tree
+        self.game_tree = None
         self.game = game
         self.prev_move = None
 
@@ -81,8 +81,9 @@ class IntelligentPlayer:
         """
         prev_move = self.game.prev_move
         self.game_tree = GameTree()
-        self.game_tree.generate_tree_based_on_move(self.game, prev_move, 6)
+        self.game_tree.generate_tree_based_on_move(self.game, prev_move, 3)
         if self.kind == 'black':
+            # assert self.game_tree.subtrees == []
             cur_tree = self.game_tree.subtrees[0]
             cur_max = self.game_tree.subtrees[0].score
             for subtree in self.game_tree.subtrees:
