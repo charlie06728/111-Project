@@ -323,7 +323,9 @@ class Pieces:
                 if counter == 2:
                     return 0
                 elif counter == 1:
-                    score_so_far = int(score_so_far * ((piece[0] * -1) / (piece[0] * -1 + 1)))
+                    # score_so_far = score_so_far * ((piece[0] * -1) / (piece[0] * -1 + 1))
+                    score_so_far = score_so_far * ((piece[0] * -1) / 3)
+
             elif count > 0:  # Make sure that the length is enough.
                 assert piece[1].kind == current_piece.kind
 
@@ -357,6 +359,11 @@ class Pieces:
                     else:
                         score_so_far += -1 * math.inf
                         return score_so_far
+                elif len(lst) == 3:
+                    if current_piece.kind == 'black':
+                        score_so_far += 4800 * (2 - counter)
+                    else:
+                        score_so_far -= 4800 * (2 - counter)
 
                 init_score = self._get_score(counter, length)
                 if self.vertices[coordinate].kind == 'white':
@@ -387,7 +394,7 @@ class Pieces:
         else:
             for grid_len in length:
                 if grid_len == 1:
-                    score_so_far += 400
+                    score_so_far += 800
                 elif grid_len == 2:
                     score_so_far += 100
                 elif grid_len == 3:
@@ -400,18 +407,15 @@ class Pieces:
 
 if __name__ == '__main__':
     ps = Pieces()
-    ps.add_piece(Piece((7, 7), 'black'))
-    ps.add_piece(Piece((5, 7), 'black'))
-    ps.add_piece(Piece((6, 7), 'black'))
+    ps.add_piece(Piece((7, 7), 'white'))
+    ps.add_piece(Piece((5, 7), 'white'))
+    ps.add_piece(Piece((6, 7), 'white'))
     # ps.add_piece(Piece((3, 7), 'black'))
-    ps.add_piece(Piece((4, 7), 'black'))
+    ps.add_piece(Piece((4, 7), 'white'))
     # ps.add_piece(Piece((9, 7), 'white'))
     # ps.add_piece(Piece((4, 7), 'white'))
     print(ps.evaluate())
     print(ps.vertices[(5, 7)].neighbours)
 
-    ps.add_piece(Piece((8, 6), 'black'))
-    ps.add_piece(Piece((9, 5), 'black'))
-    ps.add_piece(Piece((10, 4), 'black'))
-    print(ps.evaluate())
-    print(ps.vertices[(5, 7)].neighbours)
+    # ps.add_piece(Piece((8, 6), 'black'))
+    # ps.add_piece(Piece((4, 7), 'black'))
