@@ -50,19 +50,25 @@ class GameTree:
         if depth == 0:
             self.root = prev_move
             self.score = game_state.get_score()
-            return self
+            # return self
+            return None
         else:
             self.root = prev_move
             valid_moves = game_state.get_valid_moves()
 
+            assert valid_moves != []
             for move in valid_moves:
                 copy_game = deepcopy(game_state)
                 copy_game.make_move(move)
                 next_tree = GameTree(black_move=not self.black_move)
+                self.add_subtree(next_tree)
                 if self.score is not None:
                     next_tree.better_score = self.score
 
-                self.add_subtree(next_tree.generate_tree_based_on_move(copy_game, move, depth - 1))
+                next_subtree = next_tree.generate_tree_based_on_move(copy_game, move,
+                                                                     depth - 1)
+                if next_subtree is not None:
+                    next_tree.add_subtree(next_subtree)
 
                 self.score = self.minimax()
 
@@ -74,13 +80,16 @@ class GameTree:
                 elif not self.black_move and self.better_score > self.score:
                     return None
 
+            return self
+
     def minimax(self) -> int:
         """Return the score that favor the current player most.
         """
         assert self.subtrees != []
+        assert self.subtrees is not None
         score = []
         for subtree in self.subtrees:
-            if subtree.score is not None:
+            if subtree is not None and subtree.score is not None and subtree != []:
                 score.append(subtree.score)
 
         if self.black_move:
@@ -91,7 +100,7 @@ class GameTree:
     def add_subtree(self, subtree: GameTree) -> None:
         """Add the given subtree to self.subtrees. """
         self.subtrees.append(subtree)
-        self.update_score()
+        # self.update_score()
 
     def update_score(self) -> None:
         """Update the score for the current tree based on the given chess game. """
@@ -121,6 +130,12 @@ class GameTree:
             if move == subtree.move:
                 return subtree
         return None
+
+    def print_tree(self) -> None:
+        """Designed for testing which can be helpful to visualize the generated tree.
+        """
+        while True:
+            return None
 
 
 # Press the green button in the gutter to run the script.
