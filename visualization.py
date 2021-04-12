@@ -51,17 +51,17 @@ def ai_move(event) -> None:
 def area_recognition(x, y) -> Optional[tuple[int, int]]:
     """Return the coordinate of the move on the board.
     """
-    if x < 25 or x > 775 or y < 25 or y > 775:
+    if x < 20 or x > 660 or y < 20 or y > 660:
         return None
 
-    hor = (x // 50) - 1
-    h_remainder = x % 50
-    ver = (y // 50) - 1
-    v_remainder = y % 50
+    hor = (x // 40) - 1
+    h_remainder = x % 40
+    ver = (y // 40) - 1
+    v_remainder = y % 40
 
-    if h_remainder > 25:
+    if h_remainder > 20:
         hor += 1
-    if v_remainder > 25:
+    if v_remainder > 20:
         ver += 1
 
     assert 0 <= hor < 15 and 0 <= ver < 15
@@ -71,15 +71,15 @@ def area_recognition(x, y) -> Optional[tuple[int, int]]:
 
 def get_coordinate(cord: tuple[int, int]) -> tuple[int, int]:
     """Return the coordinate of this piece on the canvas"""
-    x = (cord[0] + 1) * 50
-    y = (cord[1] + 1) * 50
+    x = (cord[0] + 1) * 40
+    y = (cord[1] + 1) * 40
     return (x, y)
 
 
 def draw_piece(cord: tuple[int, int], kind: str) -> None:
     """Draw the piece on the canvas.
     """
-    radius = 13
+    radius = 10
     if kind == 'white':
         kind = 'silver'
     canvas.create_oval(cord[0] - radius, cord[1] - radius,
@@ -90,15 +90,15 @@ def _draw_chess_board() -> None:
     """Draw a new chess board.
     """
     for i in range(15):
-        start = (50, (i + 1) * 50)
-        end = (800, (i + 1) * 50)
+        start = (40, (i + 1) * 40)
+        end = (600, (i + 1) * 40)
         canvas.create_line(start[0], start[1], end[0], end[1])
 
-        start = ((i + 1) * 50, 50)
-        end = ((i + 1) * 50, 800)
+        start = ((i + 1) * 40, 40)
+        end = ((i + 1) * 40, 600)
         canvas.create_line(start[0], start[1], end[0], end[1])
         for j in range(15):
-            coordinate = ((i + 1) * 50, (j + 1) * 50)
+            coordinate = ((i + 1) * 40, (j + 1) * 40)
             canvas.create_oval(coordinate[0] - 2, coordinate[1] - 2,
                                coordinate[0] + 2, coordinate[1] + 2, fill='black')
 
