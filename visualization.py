@@ -11,12 +11,13 @@ game = ChessGame()
 
 
 def take_move(event) -> None:
-    """..."""
+    """Let the user take their move and draw the piece on the game board"""
     global game_state
     x = event.x
     y = event.y
     print(x, y)
     move = area_recognition(x, y)
+
     if game.get_board()[move[0]][move[1]] is not None or move is None:
         return None
     else:
@@ -26,14 +27,30 @@ def take_move(event) -> None:
         game.make_move(move)
         if game.get_score() == -1 * math.inf:
             val_state.set("You won!")
+            return None
+        val_state.set("AI is currently thinking!")
 
-        ai_move = ai.choose_move()
-        draw_cord = get_coordinate(ai_move)
-        game.make_move(ai_move)
-        print(f"AI: {ai_move}")
-        draw_piece((draw_cord[0], draw_cord[1]), 'black')
-        if game.get_score() == math.inf:
-            val_state.set("You lost!")
+        # ai_move = ai.choose_move()
+        # draw_cord = get_coordinate(ai_move)
+        # game.make_move(ai_move)
+        # print(f"AI: {ai_move}")
+        # draw_piece((draw_cord[0], draw_cord[1]), 'black')
+        # if game.get_score() == math.inf:
+        #     val_state.set("You lost!")
+
+
+def ai_move(event) -> None:
+    """Let the ai take its move and draw the piece on the board"""
+    if val_state.get() == 'You won!':
+        return None
+    ai_next_move = ai.choose_move()
+    draw_cord = get_coordinate(ai_next_move)
+    game.make_move(ai_next_move)
+    print(f"AI: {ai_move}")
+    draw_piece((draw_cord[0], draw_cord[1]), 'black')
+    val_state.set("It's your turn!")
+    if game.get_score() == math.inf:
+        val_state.set("You lost!")
 
 
 def area_recognition(x, y) -> Optional[tuple[int, int]]:
@@ -107,6 +124,11 @@ def restart() -> None:
     val_state.set("The game is ongoing")
 
 
+def change_mode(depth: int) -> None:
+    """..."""
+    ai.depth = depth
+
+
 def auxiliary_widgets() -> None:
     """Add auxiliary widgets.
     """
@@ -120,6 +142,15 @@ def auxiliary_widgets() -> None:
     start_button = tk.Button(window, text="Restart", width=15, height=2, command=restart)
     start_button.place(x=900, y=500, anchor='nw')
 
+    # var = tk.StringVar()
+    # radio_1 = tk.Radiobutton(window, text='Easy Mode', variable=var, value='A',
+    #                          command=change_mode(2))
+    # radio_1.place(x=850, y=250)
+
+    # radio_2 = tk.Radiobutton(window, text='Hard Mode(longer time)', variable=var, value='B',
+    #                          command=change_mode(3))
+    # radio_2.place(x=850, y=350)
+
 
 if __name__ == '__main__':
     """Visualize the chess game.
@@ -127,14 +158,6 @@ if __name__ == '__main__':
     window = tk.Tk()
     window.title('Five in A Row Game')
     window.geometry('1200x800')
-
-    # Frames.
-    # frm = tk.Frame(window)
-    # frm.pack()
-    # board_frame = tk.Frame(frm)
-    # right_frame = tk.Frame(frm)
-    # board_frame.pack(side='left')
-    # right_frame.pack(side='right')
 
     # Canvas.
     canvas = tk.Canvas(window, height=750, width=750, bg='white')
@@ -151,6 +174,7 @@ if __name__ == '__main__':
     # Auxiliary Button.
     auxiliary_widgets()
 
-    canvas.bind('<ButtonRelease-1>', take_move)
+    canvas.bind('<Button-1>', take_move)
+    canvas.bind('<ButtonRelease-1>', ai_move)
 
     window.mainloop()
