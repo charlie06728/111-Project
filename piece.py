@@ -297,6 +297,8 @@ class Pieces:
         neighbours = current_piece.neighbours
 
         pieces_in_dir = neighbours[direction]
+        if len(pieces_in_dir) == 0:
+            return 0
 
         # Using a list to store the distance between pieces in terms of [1, 2,...]
         # length = []
@@ -318,6 +320,8 @@ class Pieces:
 
             # If enemy piece is countered, add 1 to counter.
             if piece[1].kind != current_piece.kind:
+                if piece[0] != -1:
+                    continue
                 # assert piece[0] == -1
                 counter += 1
                 if counter == 2:
@@ -353,10 +357,10 @@ class Pieces:
                 # Five in a row.
                 if len(lst) == 4 and count == 0:
                     if current_piece.kind == 'black':
-                        score_so_far += math.inf
+                        score_so_far = math.inf
                         return score_so_far
                     else:
-                        score_so_far += -1 * math.inf
+                        score_so_far = -1 * math.inf
                         return score_so_far
                 elif len(lst) == 3 and count == 1:
                     if current_piece.kind == 'black' and counter == 0:
@@ -408,3 +412,16 @@ class Pieces:
         return score_so_far
 
 
+if __name__ == '__main__':
+    ps = Pieces()
+    ps.add_piece(Piece((10, 7), 'black'))
+    ps.add_piece(Piece((6, 7), 'white'))
+    # ps.add_piece(Piece((8, 7), 'black'))
+    ps.add_piece(Piece((5, 7), 'white'))
+    ps.add_piece(Piece((8, 7), 'white'))
+    ps.add_piece(Piece((7, 7), 'white'))
+    ps.add_piece(Piece((9, 7), 'white'))
+    # ps.add_piece(Piece((8, 7), 'black'))
+    # ps.add_piece(Piece((2, 7), 'white'))
+    print(ps.evaluate())
+    print(ps.vertices[7, 7].neighbours)
