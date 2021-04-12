@@ -12,13 +12,14 @@ game = ChessGame()
 
 def take_move(event) -> None:
     """Let the user take their move and draw the piece on the game board"""
-    global game_state, white_number
+    global game_state, white_number, val_state
     x = event.x
     y = event.y
     print(x, y)
     move = area_recognition(x, y)
 
-    if game.get_board()[move[0]][move[1]] is not None or move is None:
+    if game.get_board()[move[0]][move[1]] is not None or move is None or \
+            val_state.get() in {"You won!", "You lost!"}:
         return None
     else:
         # breakpoint()
@@ -144,7 +145,7 @@ def auxiliary_widgets() -> None:
     decorations.create_oval(5, 15, 120, 135,  fill='silver')
     decorations.create_oval(85, 15, 205, 135, fill='black')
 
-    name = tk.Label(window, text="Five in a row", font=('Italian', 40), width=15, heigh=1)
+    name = tk.Label(window, text="Five in a row", font=('Helvetica', 40), width=15, heigh=1)
     name.place(x=670, y=50)
 
     # b_1 = tk.Button(window, text="Easy Mode", width=30, height=2, command=change_mode(2))
