@@ -69,19 +69,21 @@ class IntelligentPlayer:
     game_tree: Optional[GameTree]
     game: ChessGame
     prev_move: Optional[tuple[int, int]]
+    depth: int
 
-    def __init__(self, kind: str, game: ChessGame) -> None:
+    def __init__(self, kind: str, game: ChessGame, depth: int = 2) -> None:
         self.kind = kind
         self.game_tree = None
         self.game = game
         self.prev_move = None
+        self.depth = depth
 
     def choose_move(self) -> tuple[int, int]:
         """Choose next move wisely.
         """
         prev_move = self.game.prev_move
         self.game_tree = GameTree()
-        self.game_tree.generate_tree_based_on_move(self.game, prev_move, 1)
+        self.game_tree.generate_tree_based_on_move(self.game, prev_move, self.depth)
         if self.kind == 'black':
             # assert self.game_tree.subtrees == []
             cur_tree = self.game_tree.subtrees[0]

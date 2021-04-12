@@ -12,7 +12,7 @@ game = ChessGame()
 
 def take_move(event) -> None:
     """Let the user take their move and draw the piece on the game board"""
-    global game_state
+    global game_state, white_number
     x = event.x
     y = event.y
     print(x, y)
@@ -25,29 +25,24 @@ def take_move(event) -> None:
         draw_cord = get_coordinate(move)
         draw_piece((draw_cord[0], draw_cord[1]), 'white')
         game.make_move(move)
+        white_number += 1
         if game.get_score() == -1 * math.inf:
             val_state.set("You won!")
             return None
         val_state.set("AI is currently thinking!")
 
-        # ai_move = ai.choose_move()
-        # draw_cord = get_coordinate(ai_move)
-        # game.make_move(ai_move)
-        # print(f"AI: {ai_move}")
-        # draw_piece((draw_cord[0], draw_cord[1]), 'black')
-        # if game.get_score() == math.inf:
-        #     val_state.set("You lost!")
-
 
 def ai_move(event) -> None:
     """Let the ai take its move and draw the piece on the board"""
-    if val_state.get() == 'You won!':
+    global black_number
+    if val_state.get() == 'You won!' or white_number != black_number:
         return None
     ai_next_move = ai.choose_move()
     draw_cord = get_coordinate(ai_next_move)
     game.make_move(ai_next_move)
     print(f"AI: {ai_move}")
     draw_piece((draw_cord[0], draw_cord[1]), 'black')
+    black_number += 1
     val_state.set("It's your turn!")
     if game.get_score() == math.inf:
         val_state.set("You lost!")
@@ -115,17 +110,19 @@ def _draw_chess_board() -> None:
 def restart() -> None:
     """Restart the game.
     """
-    global ai_turn, game
+    global ai_turn, game, black_number, white_number
     ai_turn = False
     game.restart()
     game.make_move((7, 7))
     canvas.delete('all')
     _draw_chess_board()
     val_state.set("The game is ongoing")
+    white_number, black_number = 0, 1
 
 
 def change_mode(depth: int) -> None:
     """..."""
+    global ai
     ai.depth = depth
 
 
@@ -142,19 +139,20 @@ def auxiliary_widgets() -> None:
     start_button = tk.Button(window, text="Restart", width=15, height=2, command=restart)
     start_button.place(x=900, y=500, anchor='nw')
 
-    # var = tk.StringVar()
-    # radio_1 = tk.Radiobutton(window, text='Easy Mode', variable=var, value='A',
-    #                          command=change_mode(2))
-    # radio_1.place(x=850, y=250)
+    # b_1 = tk.Button(window, text="Easy Mode", width=30, height=2, command=change_mode(2))
+    # b_1.place(x=850, y=250)
 
-    # radio_2 = tk.Radiobutton(window, text='Hard Mode(longer time)', variable=var, value='B',
-    #                          command=change_mode(3))
-    # radio_2.place(x=850, y=350)
+    # b_2 = tk.Button(window, text="Hard Mode(Longer running Time)", width=30, height=2,
+    #                 command=change_mode(4))
+    # b_2.place(x=850, y=350)
 
 
 if __name__ == '__main__':
     """Visualize the chess game.
         """
+    white_number = 0
+    black_number = 0
+
     window = tk.Tk()
     window.title('Five in A Row Game')
     window.geometry('1200x800')
@@ -169,6 +167,7 @@ if __name__ == '__main__':
     # Create an AI player.
     game = ChessGame()
     game.make_move((7, 7))
+    black_number += 1
     ai = IntelligentPlayer('black', game)
 
     # Auxiliary Button.
