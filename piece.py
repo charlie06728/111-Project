@@ -53,6 +53,9 @@ class Piece:
         """
         for direction in DIRECTIONS:
             counter = []
+            neigh = self.neighbours[direction]
+            if len(neigh) == 0:
+                return
             for piece_tup in self.neighbours[direction]:
                 if piece_tup[1].kind != self.kind:
                     counter.append(piece_tup)
@@ -360,10 +363,14 @@ class Pieces:
                         score_so_far += -1 * math.inf
                         return score_so_far
                 elif len(lst) == 3:
-                    if current_piece.kind == 'black':
-                        score_so_far += 4800 * (2 - counter)
-                    else:
-                        score_so_far -= 4800 * (2 - counter)
+                    if current_piece.kind == 'black' and counter == 0:
+                        score_so_far += 4800 * 2
+                    elif current_piece.kind == 'black' and counter == 1:
+                        score_so_far += 1200
+                    elif current_piece.kind == 'white' and counter == 0:
+                        score_so_far -= 4800 * 2
+                    elif current_piece.kind == 'white' and counter == 1:
+                        score_so_far -= 1200
 
                 init_score = self._get_score(counter, length)
                 if self.vertices[coordinate].kind == 'white':

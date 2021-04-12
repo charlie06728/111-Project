@@ -35,6 +35,19 @@ class ChessGame:
         self.pieces = Pieces()
         self.prev_move = None
 
+    def restart(self) -> None:
+        """Restart the game.
+        """
+        self._board = []
+        for i in range(15):
+            self._board.append([])
+            for _ in range(15):
+                self._board[i].append(None)
+
+        self._is_black_active = True
+        self.pieces = Pieces()
+        self.prev_move = None
+
     def make_move(self, coordinate: tuple[int, int]) -> None:
         """Make move on the chess game.
         """
@@ -98,6 +111,11 @@ class ChessGame:
         """Return whether the current move is by black.
         """
         return self._is_black_active
+
+    def get_board(self) -> list[list]:
+        """Return board.
+        """
+        return self._board
 
     def print_board(self) -> None:
         """A function designed for testing.
