@@ -134,10 +134,18 @@ def auxiliary_widgets() -> None:
     val_state.set("The game is ongoing")
     game_state = tk.Label(window, textvariable=val_state, font=('Arial', 20), width=30,
                           height=2)
-    game_state.place(x=800, y=150, anchor='nw')
+    game_state.place(x=700, y=350, anchor='nw')
 
     start_button = tk.Button(window, text="Restart", width=15, height=2, command=restart)
-    start_button.place(x=900, y=500, anchor='nw')
+    start_button.place(x=800, y=500, anchor='nw')
+
+    decorations = tk.Canvas(window, height=150, width=250, bg='white')
+    decorations.place(x=750, y=100, anchor='nw')
+    decorations.create_oval(5, 15, 120, 135,  fill='silver')
+    decorations.create_oval(85, 15, 205, 135, fill='black')
+
+    name = tk.Label(window, text="Five in a row", font=('Italian', 40), width=15, heigh=1)
+    name.place(x=670, y=50)
 
     # b_1 = tk.Button(window, text="Easy Mode", width=30, height=2, command=change_mode(2))
     # b_1.place(x=850, y=250)

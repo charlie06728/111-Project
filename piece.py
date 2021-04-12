@@ -278,7 +278,7 @@ class Pieces:
         for coordinate in self.vertices:
             for direc in DIRECTIONS:
                 # print(f"")
-                cor_score = self._single_evaluation(coordinate, 4, direc, set(), [])
+                cor_score = self._single_evaluation(coordinate, 4, direc, set(), [], [])
                 score_so_far += cor_score
                 if score_so_far == math.inf or score_so_far == math.inf * -1:
                     return score_so_far
@@ -288,7 +288,7 @@ class Pieces:
         return score_so_far
 
     def _single_evaluation(self, coordinate: tuple[int, int], count: int, direction: str,
-                           visited: set, lst: list, counter: int = 0) -> Union[float, int]:
+                           visited: set, lst: list, length: list, counter: int = 0) -> Union[float, int]:
         """..."""
         # ACCUMULATOR:
         score_so_far = 0
@@ -297,9 +297,6 @@ class Pieces:
         neighbours = current_piece.neighbours
 
         pieces_in_dir = neighbours[direction]
-
-        # The number of enemy pieces.
-        # counter = 0
 
         # Using a list to store the distance between pieces in terms of [1, 2,...]
         # length = []
@@ -310,7 +307,7 @@ class Pieces:
                 lst_of_length.append(p[0])
         for i, piece in enumerate(pieces_in_dir.copy()):
             # Using a list to store the distance between pieces in terms of [1, 2,...]
-            length = []
+            # length = []
             # print(f"{piece[1].coordinate}--neighbour")
             if piece[1] in visited:
                 if piece[0] in lst_of_length:
@@ -324,6 +321,9 @@ class Pieces:
                 # assert piece[0] == -1
                 counter += 1
                 if counter == 2:
+                    current_piece.neighbours[direction] = []
+                    for tup in length:
+                        tup[1].neighbours[direction] = []
                     return 0
                 elif counter == 1:
                     # score_so_far = score_so_far * ((piece[0] * -1) / (piece[0] * -1 + 1))
@@ -343,7 +343,7 @@ class Pieces:
                     continue
 
                 # Update the length only if it's the same kind piece
-                length.append(piece[0])
+                length.append(piece)
                 if piece[0] == 1:
                     lst.append(1)
                 # print(length)
@@ -351,10 +351,6 @@ class Pieces:
                 count -= piece[0]
 
                 # Five in a row.
-                # if all(item == 1 for item in length) and count <= 0:
-                # for item in length:
-                #     if item == 1:
-                #         lst.append(1)
                 if len(lst) == 4 and count == 0:
                     if current_piece.kind == 'black':
                         score_so_far += math.inf
@@ -362,7 +358,7 @@ class Pieces:
                     else:
                         score_so_far += -1 * math.inf
                         return score_so_far
-                elif len(lst) == 3:
+                elif len(lst) == 3 and count == 1:
                     if current_piece.kind == 'black' and counter == 0:
                         score_so_far += 4800 * 2
                     elif current_piece.kind == 'black' and counter == 1:
@@ -371,14 +367,14 @@ class Pieces:
                         score_so_far -= 4800 * 2
                     elif current_piece.kind == 'white' and counter == 1:
                         score_so_far -= 1200
-
-                init_score = self._get_score(counter, length)
-                if self.vertices[coordinate].kind == 'white':
-                    # breakpoint()
-                    score_so_far -= init_score
                 else:
-                    score_so_far += init_score
-                # score_so_far += self._get_score(counter, length)
+                    init_score = self._get_score(counter, length)
+                    if self.vertices[coordinate].kind == 'white':
+                        # breakpoint()
+                        score_so_far -= init_score
+                    else:
+                        score_so_far += init_score
+                    # score_so_far += self._get_score(counter, length)
 
                 next_piece = piece[1]
 
@@ -386,11 +382,11 @@ class Pieces:
                 # print(init_score)
 
                 score_so_far += self._single_evaluation(next_piece.coordinate, count, direction,
-                                                        visited, lst, counter)
+                                                        visited, lst, length, counter)
 
         return score_so_far
 
-    def _get_score(self, counter: int, length: list[int]) -> int:
+    def _get_score(self, counter: int, length: list[tuple[int, Piece]]) -> int:
         """..."""
         score_so_far = 0
 
@@ -400,11 +396,11 @@ class Pieces:
             pass
         else:
             for grid_len in length:
-                if grid_len == 1:
+                if grid_len[0] == 1:
                     score_so_far += 800
-                elif grid_len == 2:
+                elif grid_len[0] == 2:
                     score_so_far += 100
-                elif grid_len == 3:
+                elif grid_len[0] == 3:
                     score_so_far += 25
             if counter == 1:
                 score_so_far = score_so_far // 2
@@ -412,17 +408,3 @@ class Pieces:
         return score_so_far
 
 
-if __name__ == '__main__':
-    ps = Pieces()
-    ps.add_piece(Piece((7, 7), 'white'))
-    ps.add_piece(Piece((5, 7), 'white'))
-    ps.add_piece(Piece((6, 7), 'white'))
-    # ps.add_piece(Piece((3, 7), 'black'))
-    ps.add_piece(Piece((4, 7), 'white'))
-    # ps.add_piece(Piece((9, 7), 'white'))
-    # ps.add_piece(Piece((4, 7), 'white'))
-    print(ps.evaluate())
-    print(ps.vertices[(5, 7)].neighbours)
-
-    # ps.add_piece(Piece((8, 6), 'black'))
-    # ps.add_piece(Piece((4, 7), 'black'))
