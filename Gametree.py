@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import List, Optional, Union
 from copy import deepcopy
 from ChessGame import ChessGame
+import math
 
 START_MOVE = '*'
 
@@ -71,6 +72,10 @@ class GameTree:
                     next_tree.add_subtree(next_subtree)
 
                 self.score = self.minimax()
+                if self.score == math.inf and self.black_move:
+                    break
+                elif self.score == -1 * math.inf and not self.black_move:
+                    break
 
                 # Alpha-Beta pruning, The AI player will always be the black one.
                 if self.score is None or self.better_score is None:

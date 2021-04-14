@@ -116,7 +116,7 @@ class Pieces:
             # difference between y values.
             if direction == 'vertical':
                 for i in [1, -1]:
-                    for j in range(1, 6):
+                    for j in range(1, 4):
                         y = cur_cor[1] + i * j
                         x = cur_cor[0]
                         if (x, y) not in self.vertices:
@@ -131,7 +131,7 @@ class Pieces:
                                 n_p = self.vertices[(x, y)]
                                 # if original_nei[1].kind != n_p.kind:
                                 #     continue
-                                if original_nei[0] > abs(y - cur_cor[1]) and \
+                                if abs(original_nei[0]) > abs(y - cur_cor[1]) and \
                                         ((y - cur_piece.coordinate[1]) /
                                          (y - original_nei[1].coordinate[1])) > 0:
                                     n_p.neighbours[direction].remove(original_nei)
@@ -145,7 +145,7 @@ class Pieces:
                                                                 - abs(y - cur_cor[1]))
                             for original_nei in self.vertices[(x, y)].neighbours[direction]:
                                 n_p = self.vertices[(x, y)]
-                                if original_nei[0] > abs(y - cur_cor[1]) and (
+                                if abs(original_nei[0]) > abs(y - cur_cor[1]) and (
                                         (y - cur_piece.coordinate[1]) /
                                         (y - original_nei[1].coordinate[1])) > 0:
                                     n_p.neighbours[direction].remove(original_nei)
@@ -156,7 +156,7 @@ class Pieces:
             # difference between x values.
             elif direction == 'horizontal':
                 for i in [1, -1]:
-                    for j in range(1, 6):
+                    for j in range(1, 4):
                         y = cur_cor[1]
                         x = cur_cor[0] + i * j
                         if (x, y) not in self.vertices:
@@ -171,7 +171,7 @@ class Pieces:
                                 n_p = self.vertices[(x, y)]
                                 # if original_nei[1].kind != n_p.kind:
                                 #     continue
-                                if original_nei[0] > abs(x - cur_cor[0]) and \
+                                if abs(original_nei[0]) > abs(x - cur_cor[0]) and \
                                         ((x - cur_piece.coordinate[0]) /
                                          (x - original_nei[1].coordinate[0])) > 0:
                                     n_p.neighbours[direction].remove(original_nei)
@@ -185,7 +185,7 @@ class Pieces:
                                                                 - abs(x - cur_cor[0]))
                             for original_nei in self.vertices[(x, y)].neighbours[direction]:
                                 n_p = self.vertices[(x, y)]
-                                if original_nei[0] > abs(x - cur_cor[0]) and (
+                                if abs(original_nei[0]) > abs(x - cur_cor[0]) and (
                                         (x - cur_piece.coordinate[0]) /
                                         (x - original_nei[1].coordinate[0])) > 0:
                                     n_p.neighbours[direction].remove(original_nei)
@@ -196,7 +196,7 @@ class Pieces:
             # piece could be either one.
             elif direction == 'right diagonal':
                 for i in [1, -1]:
-                    for j in range(1, 6):
+                    for j in range(1, 4):
                         y = cur_cor[1] + i * j
                         x = cur_cor[0] + i * j
                         if (x, y) not in self.vertices:
@@ -209,9 +209,8 @@ class Pieces:
                             for original_nei in self.vertices[(x, y)].neighbours[direction]:
                                 # breakpoint()
                                 n_p = self.vertices[(x, y)]
-                                # if original_nei[1].kind != n_p.kind:
-                                #     continue
-                                if original_nei[0] > abs(x - cur_cor[0]) and \
+
+                                if abs(original_nei[0]) > abs(x - cur_cor[0]) and \
                                         ((x - cur_piece.coordinate[0]) /
                                          (x - original_nei[1].coordinate[0])) > 0:
                                     n_p.neighbours[direction].remove(original_nei)
@@ -223,7 +222,7 @@ class Pieces:
                                                                 - abs(x - cur_cor[0]))
                             for original_nei in self.vertices[(x, y)].neighbours[direction]:
                                 n_p = self.vertices[(x, y)]
-                                if original_nei[0] > abs(x - cur_cor[0]) and (
+                                if abs(original_nei[0]) > abs(x - cur_cor[0]) and (
                                         (x - cur_piece.coordinate[0]) /
                                         (x - original_nei[1].coordinate[0])) > 0:
                                     n_p.neighbours[direction].remove(original_nei)
@@ -234,7 +233,7 @@ class Pieces:
             # piece could be either one.
             elif direction == 'left diagonal':
                 for i in [1, -1]:
-                    for j in range(1, 6):
+                    for j in range(1, 4):
                         y = cur_cor[1] + i * j
                         x = cur_cor[0] - i * j
                         if (x, y) not in self.vertices:
@@ -249,7 +248,7 @@ class Pieces:
                                 n_p = self.vertices[(x, y)]
                                 # if original_nei[1].kind != n_p.kind:
                                 #     continue
-                                if original_nei[0] > abs(x - cur_cor[0]) and \
+                                if abs(original_nei[0]) > abs(x - cur_cor[0]) and \
                                         ((x - cur_piece.coordinate[0]) /
                                          (x - original_nei[1].coordinate[0])) > 0:
                                     n_p.neighbours[direction].remove(original_nei)
@@ -261,7 +260,7 @@ class Pieces:
                                                                 - abs(x - cur_cor[0]))
                             for original_nei in self.vertices[(x, y)].neighbours[direction]:
                                 n_p = self.vertices[(x, y)]
-                                if original_nei[0] > abs(x - cur_cor[0]) and (
+                                if abs(original_nei[0]) > abs(x - cur_cor[0]) and (
                                         (x - cur_piece.coordinate[0]) /
                                         (x - original_nei[1].coordinate[0])) > 0:
                                     n_p.neighbours[direction].remove(original_nei)
@@ -279,6 +278,10 @@ class Pieces:
             for direc in DIRECTIONS:
                 # print(f"")
                 cor_score = self._single_evaluation(coordinate, 4, direc, set(), [], [])
+                if cor_score is None:
+                    cor_score = 0
+                elif cor_score == math.inf or cor_score == math.inf * -1:
+                    return cor_score
                 score_so_far += cor_score
                 if score_so_far == math.inf or score_so_far == math.inf * -1:
                     return score_so_far
@@ -288,7 +291,8 @@ class Pieces:
         return score_so_far
 
     def _single_evaluation(self, coordinate: tuple[int, int], count: int, direction: str,
-                           visited: set, lst: list, length: list, counter: int = 0) -> Union[float, int]:
+                           visited: set, lst: list, length: list, counter: int = 0) -> \
+            Union[float, int, None]:
         """..."""
         # ACCUMULATOR:
         score_so_far = 0
@@ -328,11 +332,11 @@ class Pieces:
                     current_piece.neighbours[direction] = []
                     for tup in length:
                         tup[1].neighbours[direction] = []
-                    return 0
+                    return None
                 elif counter == 1:
                     # score_so_far = score_so_far * ((piece[0] * -1) / (piece[0] * -1 + 1))
                     score_so_far = score_so_far * ((piece[0] * -1) / 3)
-
+                # continue
             elif count > 0:  # Make sure that the length is enough.
                 assert piece[1].kind == current_piece.kind
 
@@ -356,6 +360,7 @@ class Pieces:
 
                 # Five in a row.
                 if len(lst) == 4 and count == 0:
+                    # breakpoint()
                     if current_piece.kind == 'black':
                         score_so_far = math.inf
                         return score_so_far
@@ -385,8 +390,11 @@ class Pieces:
                 visited.add(current_piece)
                 # print(init_score)
 
-                score_so_far += self._single_evaluation(next_piece.coordinate, count, direction,
-                                                        visited, lst, length, counter)
+                n_score = self._single_evaluation(next_piece.coordinate, count, direction,
+                                                  visited, lst, length, counter)
+                if n_score is None:
+                    return None
+                score_so_far += n_score
 
         return score_so_far
 
@@ -403,9 +411,9 @@ class Pieces:
                 if grid_len[0] == 1:
                     score_so_far += 800
                 elif grid_len[0] == 2:
-                    score_so_far += 100
+                    score_so_far += 400
                 elif grid_len[0] == 3:
-                    score_so_far += 25
+                    score_so_far += 100
             if counter == 1:
                 score_so_far = score_so_far // 2
 
@@ -414,14 +422,14 @@ class Pieces:
 
 if __name__ == '__main__':
     ps = Pieces()
-    ps.add_piece(Piece((10, 7), 'black'))
     ps.add_piece(Piece((6, 7), 'white'))
+    # ps.add_piece(Piece((11, 7), 'black'))
     # ps.add_piece(Piece((8, 7), 'black'))
-    ps.add_piece(Piece((5, 7), 'white'))
-    ps.add_piece(Piece((8, 7), 'white'))
     ps.add_piece(Piece((7, 7), 'white'))
+    ps.add_piece(Piece((8, 7), 'white'))
     ps.add_piece(Piece((9, 7), 'white'))
+    ps.add_piece(Piece((10, 7), 'white'))
     # ps.add_piece(Piece((8, 7), 'black'))
     # ps.add_piece(Piece((2, 7), 'white'))
     print(ps.evaluate())
-    print(ps.vertices[7, 7].neighbours)
+    print(ps.vertices[6, 7].neighbours)

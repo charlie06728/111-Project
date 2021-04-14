@@ -1,6 +1,7 @@
 """A ChessGame class"""
 from piece import Piece, Pieces
 from typing import Optional
+import copy
 
 BOARD_WIDTH = 15
 BOARD_LENGTH = 15
@@ -79,11 +80,18 @@ class ChessGame:
                         if self._board[i][j] is None and (i, j) not in valid_moves:
                             moves_for_piece.append((i, j))
 
-        # for i in range(piece[0] - 2, piece[0] + 3):
-        #     for j in range(piece[1] - 2, piece[1] + 3):
-        #         if i in range(0, BOARD_WIDTH) and j in range(0, BOARD_LENGTH):
-        #             if self._board[i][j] is None and (i, j) not in valid_moves:
-        #                 moves_for_piece.append((i, j))
+        # for move in moves_for_piece:
+        #     copy_pieces = copy.deepcopy(self.pieces)
+        #     n_piece = Piece(move, copy_pieces.vertices[piece].kind)
+        #     copy_pieces.add_piece(n_piece)
+        #     nei = n_piece.neighbours
+        #     n = 0
+        #     for direction in nei:
+        #         if len(nei[direction]) > 0:
+        #             n += 1
+        #             break
+        #     if n == 0:
+        #         moves_for_piece.remove(move)
 
         return moves_for_piece
 
