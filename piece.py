@@ -411,9 +411,9 @@ class Pieces:
                 if grid_len[0] == 1:
                     score_so_far += 800
                 elif grid_len[0] == 2:
-                    score_so_far += 400
-                elif grid_len[0] == 3:
                     score_so_far += 100
+                elif grid_len[0] == 3:
+                    score_so_far += 25
             if counter == 1:
                 score_so_far = score_so_far // 2
 
