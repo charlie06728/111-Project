@@ -1,7 +1,7 @@
-"""..."""
+"""The code in this file is inspired by CSC111 Assignment 3. All rights belongs to David Liu and
+Isaac Waller. """
 from __future__ import annotations
 from typing import Optional, Union
-from copy import deepcopy, copy
 import math
 # import random
 
@@ -23,6 +23,8 @@ class Piece:
          'bottom right', 'bottom left'})
       """
     kind: str
+    # The int in the tuple for neighbours represents the distance between the neighbour
+    # and the piece.
     neighbours: dict[str, list[tuple[int, Piece]]]
     coordinate: tuple[int, int]
 
@@ -68,8 +70,6 @@ class Piece:
                 delete_one = min(lst)
                 index = lst.index(delete_one)
                 self.neighbours[direction].remove(counter[index])
-            # elif len(counter) == 1 and counter[0][0] < -1:
-            #     self.neighbours[direction].remove(counter[0])
 
 
 class Pieces:
@@ -78,6 +78,7 @@ class Pieces:
     Instance Attributes:
       - vertices: Store all the piece using a dictionary from coordinate to piece.
     """
+    # The tuple represents the coordinate of the piece on the board.
     vertices: dict[tuple[int, int], Piece]
 
     def __init__(self) -> None:
@@ -106,7 +107,8 @@ class Pieces:
     def get_neighbours(self, coordinate: tuple[int, int]) -> None:
         """Return the neighbours of given pieces according to criteria as below:
           - count pieces within 5 grids away from current coordinate in each direction.
-          -
+          - If the neighbour is an enemy, its distance to current piece will be represented by a
+            negative value.
         """
         cur_piece = self.vertices[coordinate]
         cur_cor = cur_piece.coordinate
@@ -129,14 +131,11 @@ class Pieces:
                             for original_nei in self.vertices[(x, y)].neighbours[direction]:
                                 # breakpoint()
                                 n_p = self.vertices[(x, y)]
-                                # if original_nei[1].kind != n_p.kind:
-                                #     continue
                                 if abs(original_nei[0]) > abs(y - cur_cor[1]) and \
                                         ((y - cur_piece.coordinate[1]) /
                                          (y - original_nei[1].coordinate[1])) > 0:
                                     n_p.neighbours[direction].remove(original_nei)
                                     # breakpoint()
-                                    # n_p.add_neighbour(cur_piece, direction, abs(y - cur_cor[1]))
                             break
                         elif self.vertices[(x, y)].kind != cur_piece.kind:
                             cur_piece.add_neighbour(self.vertices[(x, y)], direction,
@@ -149,7 +148,6 @@ class Pieces:
                                         (y - cur_piece.coordinate[1]) /
                                         (y - original_nei[1].coordinate[1])) > 0:
                                     n_p.neighbours[direction].remove(original_nei)
-                                    # n_p.prune_neighbours()
                             break
 
             # In horizontal case, only x value changes, the distance between pieces is the
@@ -169,14 +167,11 @@ class Pieces:
                             for original_nei in self.vertices[(x, y)].neighbours[direction]:
                                 # breakpoint()
                                 n_p = self.vertices[(x, y)]
-                                # if original_nei[1].kind != n_p.kind:
-                                #     continue
                                 if abs(original_nei[0]) > abs(x - cur_cor[0]) and \
                                         ((x - cur_piece.coordinate[0]) /
                                          (x - original_nei[1].coordinate[0])) > 0:
                                     n_p.neighbours[direction].remove(original_nei)
                                     # breakpoint()
-                                    # n_p.add_neighbour(cur_piece, direction, abs(x - cur_cor[0]))
                             break
                         elif self.vertices[(x, y)].kind != cur_piece.kind:
                             cur_piece.add_neighbour(self.vertices[(x, y)], direction,
@@ -189,7 +184,6 @@ class Pieces:
                                         (x - cur_piece.coordinate[0]) /
                                         (x - original_nei[1].coordinate[0])) > 0:
                                     n_p.neighbours[direction].remove(original_nei)
-                                    # n_p.prune_neighbours()
                             break
 
             # In right diagonal case, x y changes simultaneously, so the distance between
@@ -293,7 +287,7 @@ class Pieces:
     def _single_evaluation(self, coordinate: tuple[int, int], count: int, direction: str,
                            visited: set, lst: list, length: list, counter: int = 0) -> \
             Union[float, int, None]:
-        """..."""
+        """evaluate the score of the piece. """
         # ACCUMULATOR:
         score_so_far = 0
 
@@ -399,7 +393,8 @@ class Pieces:
         return score_so_far
 
     def _get_score(self, counter: int, length: list[tuple[int, Piece]]) -> int:
-        """..."""
+        """Basic score settings for the piece and the pieces around it.
+            The score depends on the distance between the current piece and its neighbours. """
         score_so_far = 0
 
         if counter >= 2:
@@ -419,17 +414,3 @@ class Pieces:
 
         return score_so_far
 
-
-if __name__ == '__main__':
-    ps = Pieces()
-    ps.add_piece(Piece((6, 7), 'white'))
-    # ps.add_piece(Piece((11, 7), 'black'))
-    # ps.add_piece(Piece((8, 7), 'black'))
-    ps.add_piece(Piece((7, 7), 'white'))
-    ps.add_piece(Piece((8, 7), 'white'))
-    ps.add_piece(Piece((9, 7), 'white'))
-    ps.add_piece(Piece((10, 7), 'white'))
-    # ps.add_piece(Piece((8, 7), 'black'))
-    # ps.add_piece(Piece((2, 7), 'white'))
-    print(ps.evaluate())
-    print(ps.vertices[6, 7].neighbours)

@@ -1,7 +1,6 @@
 """The file that run the game."""
 
 from ChessGame import ChessGame
-from piece import Piece, Pieces
 from Gametree import GameTree
 from typing import Optional
 import random
@@ -61,9 +60,6 @@ class IntelligentPlayer:
       - game_tree: the game tree
       - game: The Chess game
       - prev_move: The previous move of opposite player.
-
-    Representation Invariants:
-      -
     """
     kind: str
     game_tree: Optional[GameTree]

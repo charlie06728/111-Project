@@ -123,12 +123,6 @@ def restart() -> None:
     white_number, black_number = 0, 1
 
 
-def change_mode(depth: int) -> None:
-    """..."""
-    global ai
-    ai.depth = depth
-
-
 def auxiliary_widgets() -> None:
     """Add auxiliary widgets.
     """
@@ -153,13 +147,6 @@ def auxiliary_widgets() -> None:
 
     name = tk.Label(window, text="Five in a row", font=('Helvetica', 40), width=15, heigh=1)
     name.place(x=670, y=50)
-
-    # b_1 = tk.Button(frame, text="Easy Mode", width=30, height=2, command=change_mode(2))
-    # b_1.place(x=850, y=650)
-
-    # b_2 = tk.Button(frame, text="Hard Mode(Longer running Time)", width=30, height=2,
-    #                 command=change_mode(4))
-    # b_2.place(x=850, y=750)
 
 
 def init() -> None:

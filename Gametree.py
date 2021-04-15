@@ -1,4 +1,5 @@
-"""The gametree class for the five in a row project"""
+"""The gametree class for the five in a row project. All code in this file are inspired by
+    CSC111 Assignment 2, created by David Liu and Isaac Waller. """
 
 from __future__ import annotations
 from typing import List, Optional, Union
