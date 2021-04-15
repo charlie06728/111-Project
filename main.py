@@ -6,6 +6,10 @@ from ChessGame import ChessGame
 from typing import Optional
 import math
 
+# The depth of AI, change this variable only if you got a great discrete graphics or sufficient time
+# waiting for processing.
+DEPTH = 2
+
 
 def take_move(event) -> None:
     """Let the user take their move and draw the piece on the game board"""
@@ -169,6 +173,7 @@ def init() -> None:
     game.make_move((7, 7))
     black_number += 1
     ai = IntelligentPlayer('black', game)
+    ai.depth = DEPTH
 
     # Auxiliary Button.
     auxiliary_widgets()
