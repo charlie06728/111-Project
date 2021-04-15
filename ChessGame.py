@@ -1,7 +1,6 @@
 """A ChessGame class"""
 from piece import Piece, Pieces
 from typing import Optional
-import copy
 
 BOARD_WIDTH = 15
 BOARD_LENGTH = 15
@@ -10,8 +9,9 @@ BOARD_LENGTH = 15
 class ChessGame:
     """A class representing a state of a game.
 
-    Representation Invariants:
-      -
+    Instance Attributes:
+      - pieces: The pieces instance for adding new piece and calculating score.
+      - prev_move: The previous move of the game.
     """
     # Private Attributes:
     #  - _board: a two-dimensional representation of a 15x15 chess board, storing the value of
@@ -80,19 +80,6 @@ class ChessGame:
                         if self._board[i][j] is None and (i, j) not in valid_moves:
                             moves_for_piece.append((i, j))
 
-        # for move in moves_for_piece:
-        #     copy_pieces = copy.deepcopy(self.pieces)
-        #     n_piece = Piece(move, copy_pieces.vertices[piece].kind)
-        #     copy_pieces.add_piece(n_piece)
-        #     nei = n_piece.neighbours
-        #     n = 0
-        #     for direction in nei:
-        #         if len(nei[direction]) > 0:
-        #             n += 1
-        #             break
-        #     if n == 0:
-        #         moves_for_piece.remove(move)
-
         return moves_for_piece
 
     def get_valid_moves(self) -> list[tuple[int, int]]:
@@ -131,7 +118,7 @@ class ChessGame:
         roughly visualized.
         """
         lst = []
-        for i in range(15):
+        for _ in range(15):
             lst.append([])
 
         for i in range(len(self._board)):

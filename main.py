@@ -6,9 +6,6 @@ from ChessGame import ChessGame
 from typing import Optional
 import math
 
-ai_turn = False
-game = ChessGame()
-
 
 def take_move(event) -> None:
     """Let the user take their move and draw the piece on the game board"""
@@ -124,7 +121,8 @@ def restart() -> None:
 
 
 def change_mode(depth: int) -> None:
-    """..."""
+    """Change the game difficult(not used).
+    """
     global ai
     ai.depth = depth
 
@@ -133,9 +131,6 @@ def auxiliary_widgets() -> None:
     """Add auxiliary widgets.
     """
     global game_state, start_button, val_state
-
-    # frame = tk.Frame(window)
-    # frame.place(x=700, y=500)
 
     val_state = tk.StringVar()
     val_state.set("The game is ongoing")
@@ -154,13 +149,6 @@ def auxiliary_widgets() -> None:
     name = tk.Label(window, text="Five in a row", font=('Helvetica', 40), width=15, heigh=1)
     name.place(x=670, y=50)
 
-    # b_1 = tk.Button(frame, text="Easy Mode", width=30, height=2, command=change_mode(2))
-    # b_1.place(x=850, y=650)
-
-    # b_2 = tk.Button(frame, text="Hard Mode(Longer running Time)", width=30, height=2,
-    #                 command=change_mode(4))
-    # b_2.place(x=850, y=750)
-
 
 def init() -> None:
     """Initialize the screen.
@@ -168,10 +156,6 @@ def init() -> None:
     global white_number, black_number, window, canvas, game, ai
     white_number = 0
     black_number = 0
-
-    # window = tk.Tk()
-    # window.title('Five in A Row Game')
-    # window.geometry('1200x800')
 
     # Canvas.
     canvas = tk.Canvas(window, height=750, width=1200, bg='white')

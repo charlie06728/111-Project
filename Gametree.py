@@ -17,6 +17,7 @@ class GameTree:
     - white_move: bool, whether the current depth of moves is for white or black player
     - subtrees: list[gametree], the possible moves after this move
     - better_score: int, the best possible score currently for the tree.
+    - game_status: A ChessGame instance.
     Update the score if a step earns more score than before
 
     """
@@ -51,7 +52,6 @@ class GameTree:
         if depth == 0:
             self.root = prev_move
             self.score = game_state.get_score()
-            # return self
             return None
         else:
             self.root = prev_move
@@ -72,6 +72,8 @@ class GameTree:
                     next_tree.add_subtree(next_subtree)
 
                 self.score = self.minimax()
+                # if infinity is encountered, end the generating process no matter
+                # the other branches
                 if self.score == math.inf and self.black_move:
                     break
                 elif self.score == -1 * math.inf and not self.black_move:
@@ -142,7 +144,3 @@ class GameTree:
         while True:
             return None
 
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    ...
