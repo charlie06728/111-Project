@@ -8,6 +8,10 @@ BOARD_LENGTH = 15
 
 class ChessGame:
     """A class representing a state of a game.
+
+    Instance Attributes:
+      - pieces: The pieces instance for adding new piece and calculating score.
+      - prev_move: The previous move of the game.
     """
     # Private Attributes:
     #  - _board: a two-dimensional representation of a 15x15 chess board, storing the value of
@@ -114,7 +118,7 @@ class ChessGame:
         roughly visualized.
         """
         lst = []
-        for i in range(15):
+        for _ in range(15):
             lst.append([])
 
         for i in range(len(self._board)):

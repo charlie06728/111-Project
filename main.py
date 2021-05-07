@@ -6,8 +6,9 @@ from ChessGame import ChessGame
 from typing import Optional
 import math
 
-ai_turn = False
-game = ChessGame()
+# The depth of AI, change this variable only if you got a great discrete graphics or sufficient time
+# waiting for processing.
+DEPTH = 2
 
 
 def take_move(event) -> None:
@@ -123,13 +124,17 @@ def restart() -> None:
     white_number, black_number = 0, 1
 
 
+def change_mode(depth: int) -> None:
+    """Change the game difficult(not used).
+    """
+    global ai
+    ai.depth = depth
+
+
 def auxiliary_widgets() -> None:
     """Add auxiliary widgets.
     """
     global game_state, start_button, val_state
-
-    # frame = tk.Frame(window)
-    # frame.place(x=700, y=500)
 
     val_state = tk.StringVar()
     val_state.set("The game is ongoing")
@@ -156,10 +161,6 @@ def init() -> None:
     white_number = 0
     black_number = 0
 
-    # window = tk.Tk()
-    # window.title('Five in A Row Game')
-    # window.geometry('1200x800')
-
     # Canvas.
     canvas = tk.Canvas(window, height=750, width=1200, bg='white')
     canvas.place(x=0, y=0, anchor='nw')
@@ -172,6 +173,7 @@ def init() -> None:
     game.make_move((7, 7))
     black_number += 1
     ai = IntelligentPlayer('black', game)
+    ai.depth = DEPTH
 
     # Auxiliary Button.
     auxiliary_widgets()

@@ -1,9 +1,7 @@
-"""The code in this file is inspired by CSC111 Assignment 3. All rights belongs to David Liu and
-Isaac Waller. """
+"""..."""
 from __future__ import annotations
 from typing import Optional, Union
 import math
-# import random
 
 
 DIRECTIONS = {'vertical', 'horizontal', 'right diagonal', 'left diagonal'}
@@ -23,8 +21,6 @@ class Piece:
          'bottom right', 'bottom left'})
       """
     kind: str
-    # The int in the tuple for neighbours represents the distance between the neighbour
-    # and the piece.
     neighbours: dict[str, list[tuple[int, Piece]]]
     coordinate: tuple[int, int]
 
@@ -78,7 +74,6 @@ class Pieces:
     Instance Attributes:
       - vertices: Store all the piece using a dictionary from coordinate to piece.
     """
-    # The tuple represents the coordinate of the piece on the board.
     vertices: dict[tuple[int, int], Piece]
 
     def __init__(self) -> None:
@@ -107,8 +102,7 @@ class Pieces:
     def get_neighbours(self, coordinate: tuple[int, int]) -> None:
         """Return the neighbours of given pieces according to criteria as below:
           - count pieces within 5 grids away from current coordinate in each direction.
-          - If the neighbour is an enemy, its distance to current piece will be represented by a
-            negative value.
+          -
         """
         cur_piece = self.vertices[coordinate]
         cur_cor = cur_piece.coordinate
@@ -220,7 +214,6 @@ class Pieces:
                                         (x - cur_piece.coordinate[0]) /
                                         (x - original_nei[1].coordinate[0])) > 0:
                                     n_p.neighbours[direction].remove(original_nei)
-                                    # n_p.prune_neighbours()
                             break
 
             # In right diagonal case, x y changes simultaneously, so the distance between
@@ -240,8 +233,6 @@ class Pieces:
                             for original_nei in self.vertices[(x, y)].neighbours[direction]:
                                 # breakpoint()
                                 n_p = self.vertices[(x, y)]
-                                # if original_nei[1].kind != n_p.kind:
-                                #     continue
                                 if abs(original_nei[0]) > abs(x - cur_cor[0]) and \
                                         ((x - cur_piece.coordinate[0]) /
                                          (x - original_nei[1].coordinate[0])) > 0:
@@ -258,7 +249,6 @@ class Pieces:
                                         (x - cur_piece.coordinate[0]) /
                                         (x - original_nei[1].coordinate[0])) > 0:
                                     n_p.neighbours[direction].remove(original_nei)
-                                    # n_p.prune_neighbours()
                             break
 
     def evaluate(self) -> int:
@@ -287,7 +277,8 @@ class Pieces:
     def _single_evaluation(self, coordinate: tuple[int, int], count: int, direction: str,
                            visited: set, lst: list, length: list, counter: int = 0) -> \
             Union[float, int, None]:
-        """evaluate the score of the piece. """
+        """Return the score of since  piece.
+        """
         # ACCUMULATOR:
         score_so_far = 0
 
@@ -298,16 +289,11 @@ class Pieces:
         if len(pieces_in_dir) == 0:
             return 0
 
-        # Using a list to store the distance between pieces in terms of [1, 2,...]
-        # length = []
-
         lst_of_length = []
         for p in pieces_in_dir:
             if p[0] > 0:
                 lst_of_length.append(p[0])
         for i, piece in enumerate(pieces_in_dir.copy()):
-            # Using a list to store the distance between pieces in terms of [1, 2,...]
-            # length = []
             # print(f"{piece[1].coordinate}--neighbour")
             if piece[1] in visited:
                 if piece[0] in lst_of_length:
@@ -328,9 +314,8 @@ class Pieces:
                         tup[1].neighbours[direction] = []
                     return None
                 elif counter == 1:
-                    # score_so_far = score_so_far * ((piece[0] * -1) / (piece[0] * -1 + 1))
                     score_so_far = score_so_far * ((piece[0] * -1) / 3)
-                # continue
+
             elif count > 0:  # Make sure that the length is enough.
                 assert piece[1].kind == current_piece.kind
 
@@ -377,7 +362,6 @@ class Pieces:
                         score_so_far -= init_score
                     else:
                         score_so_far += init_score
-                    # score_so_far += self._get_score(counter, length)
 
                 next_piece = piece[1]
 
@@ -393,8 +377,8 @@ class Pieces:
         return score_so_far
 
     def _get_score(self, counter: int, length: list[tuple[int, Piece]]) -> int:
-        """Basic score settings for the piece and the pieces around it.
-            The score depends on the distance between the current piece and its neighbours. """
+        """Return the score of given length edges.
+        """
         score_so_far = 0
 
         if counter >= 2:
@@ -406,11 +390,12 @@ class Pieces:
                 if grid_len[0] == 1:
                     score_so_far += 800
                 elif grid_len[0] == 2:
-                    score_so_far += 400
+                    score_so_far += 200
                 elif grid_len[0] == 3:
-                    score_so_far += 100
+                    score_so_far += 50
             if counter == 1:
                 score_so_far = score_so_far // 2
 
         return score_so_far
+
 
