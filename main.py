@@ -255,7 +255,7 @@ def rule() -> None:
     """Initialize the GUI for rules and choosing difficulty levels.
     """
     global window, canvas, b_0, b_1, panel, img
-    img = ImageTk.PhotoImage(Image.open("background_00.png"))
+    img = ImageTk.PhotoImage(Image.open("Pictures/background_00.png"))
     canvas = tk.Canvas(window, width=1200, height=800, bg='blue')
     canvas.place(x=0, y=0, anchor='nw')
 
@@ -285,7 +285,7 @@ if __name__ == '__main__':
 
     # rule()
     # img = ImageTk.PhotoImage(Image.open("background_00.png"))
-    img = Image.open("background_00.png")
+    img = Image.open("Pictures/background_00.png")
     img = img.resize((1200, 800), Image.ANTIALIAS)
     my_img = ImageTk.PhotoImage(img)
     canvas = tk.Canvas(window, width=1200, height=800, bg='blue')
